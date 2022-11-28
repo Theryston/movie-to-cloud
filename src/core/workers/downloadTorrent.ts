@@ -1,5 +1,6 @@
 import * as path from 'path'
 import * as WebTorrent from 'webtorrent'
+import * as fs from 'fs'
 import type { done } from 'fastq'
 import { DownloadTorrentWorkerArgs } from '../../types'
 
@@ -20,6 +21,22 @@ export function downloadTorrent(
     }
 
     torrent.on('download', (bytes: number) => {
+      if (fs.existsSync(result.path)) {
+        const isTorrentFolder = fs.lstatSync(result.path).isDirectory()
+
+        if (!isTorrentFolder) {
+          const pathWithoutExtension = result.path.replace(
+            path.extname(result.path),
+            ''
+          )
+          fs.mkdirSync(pathWithoutExtension)
+          fs.renameSync(
+            path.join(savePath, torrent.name),
+            path.join(pathWithoutExtension, torrent.name)
+          )
+        }
+      }
+
       bar.increment(bytes)
     })
 
