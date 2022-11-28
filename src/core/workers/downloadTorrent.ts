@@ -34,6 +34,7 @@ export function downloadTorrent(
             path.join(savePath, torrent.name),
             path.join(pathWithoutExtension, torrent.name)
           )
+          result.path = pathWithoutExtension
         }
       }
 
